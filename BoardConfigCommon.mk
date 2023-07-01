@@ -96,6 +96,7 @@ BOARD_KERNEL_CMDLINE += loop.max_part=7
 BOARD_KERNEL_CMDLINE += swiotlb=1
 BOARD_KERNEL_CMDLINE += cgroup.memory=nokmem,nosocket
 KERNEL_LD := LD=ld.lld
+KERNEL_CC := CC=clang
 TARGET_KERNEL_CLANG_VERSION := r522817
 
 # TARGET_KERNEL_APPEND_DTB handling
