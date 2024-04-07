@@ -16,13 +16,11 @@
 
 package org.lineageos.settings.haptic;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -41,8 +39,6 @@ public class HapticLevelFragment extends PreferenceFragment implements OnPrefere
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.haptic_settings);
-        final ActionBar actionBar = getActivity().getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
 
         final SeekBarPreference mHapticLevel = (SeekBarPreference) findPreference(HapticUtils.PREF_LEVEL);
         if (FileUtils.fileExists(HapticUtils.PATH_LEVEL)) {
@@ -74,15 +70,6 @@ public class HapticLevelFragment extends PreferenceFragment implements OnPrefere
         }
 
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            getActivity().onBackPressed();
-            return true;
-        }
-        return false;
     }
 
     private void doHapticFeedback() {
