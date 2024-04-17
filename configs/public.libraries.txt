@@ -2,6 +2,7 @@ libadsprpc.so
 libalAILDC.so
 libalCFR.so
 libalhLDC.so
+libcamera_algoup_jni.xiaomi.so
 libcdsprpc.so
 libfastcvopt.so
 libHalSuperSensorServer.so
