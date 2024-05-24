@@ -276,7 +276,7 @@ PRODUCT_COPY_FILES += \
 
 # Neural networks
 PRODUCT_PACKAGES += \
-	android.hardware.neuralnetworks@1.3.vendor
+    android.hardware.neuralnetworks@1.3.vendor
 
 # Overlay
 DEVICE_PACKAGE_OVERLAYS += \
@@ -288,6 +288,11 @@ PRODUCT_ENFORCE_RRO_TARGETS += *
 # Power
 PRODUCT_PACKAGES += \
     android.hardware.power-service.xiaomi-libperfmgr
+
+# Protobuf
+PRODUCT_PACKAGES += \
+    libprotobuf-cpp-full-3.9.1-vendorcompat \
+    libprotobuf-cpp-lite-3.9.1-vendorcompat
 
 # QTI
 PRODUCT_PACKAGES += \
@@ -305,6 +310,7 @@ PRODUCT_PACKAGES += \
     android.hardware.secure_element@1.2.vendor \
     CarrierConfigOverlay \
     libjson \
+    libprotobuf-cpp-full \
     libril \
     librilutils \
     librmnetctl
