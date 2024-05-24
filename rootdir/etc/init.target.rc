@@ -141,8 +141,8 @@ on boot
 on property:sys.boot_completed=1
     stop statsd
     # Set allocstall_threshold to 0
-    # Set swappiness to 100
-    write /proc/sys/vm/swappiness 100
+    # Set swappiness to 90
+    write /proc/sys/vm/swappiness 90
 
     # Enable ZRAM on boot_complete
     swapon_all /vendor/etc/fstab.zram
