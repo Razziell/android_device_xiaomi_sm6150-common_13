@@ -73,8 +73,8 @@
         android:layout_gravity="center_vertical"
         android:layout_toEndOf="@android:id/icon_frame"
         android:tickMark="@null"
-        android:paddingStart="0dp"
-        android:paddingEnd="12dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         style="@android:style/Widget.Material.SeekBar.Discrete" />
 
 </RelativeLayout>
