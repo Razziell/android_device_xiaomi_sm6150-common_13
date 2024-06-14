@@ -134,7 +134,7 @@ on boot
     # Create fingerprint related directory
     mkdir /mnt/vendor/persist/goodix 0770 system system
 
-    # Smart charging
+    # Lineage Health
     chown system system /sys/class/power_supply/battery/input_suspend
     chmod 0666 /sys/class/power_supply/battery/input_suspend
 
