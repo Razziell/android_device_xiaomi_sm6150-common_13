@@ -11,13 +11,9 @@ persist.vendor.cne.feature=1
 ro.incremental.enable=yes
 
 # LMKD
-ro.config.low_ram=false
 ro.lmk.use_psi=true
-ro.lmk.low=1001
-ro.lmk.medium=800
-ro.lmk.psi_partial_stall_ms=80
-ro.lmk.thrashing_limit=100
-ro.lmk.thrashing_limit_decay=10
+ro.lmk.kill_heaviest_task=true
+ro.lmk.kill_timeout_ms=15
 
 # Media
 media.aac_51_output_enabled=true
