@@ -117,6 +117,8 @@ camera.disable_zsl_mode=1
 ro.soc.manufacturer=QTI
 
 # Dalvik
+dalvik.vm.dex2oat-cpu-set=0,1,2,3,4,6,7
+dalvik.vm.dex2oat-threads=7
 dalvik.vm.systemuicompilerfilter=speed
 
 # Data modules
@@ -128,22 +130,39 @@ persist.vendor.dpm.feature=1
 persist.vendor.dpm.nsrm.bkg.evt=3955
 persist.vendor.dpmhalservice.enable=1
 
-# Display
+# Display - Phase offsets for 66 Hz
 debug.sf.use_phase_offsets_as_durations=1
-debug.sf.late.sf.duration=10500000
-debug.sf.late.app.duration=20500000
-debug.sf.early.sf.duration=21000000
-debug.sf.early.app.duration=16500000
-debug.sf.earlyGl.sf.duration=13500000
-debug.sf.earlyGl.app.duration=21000000
+debug.sf.late.sf.duration=9500000
+debug.sf.late.app.duration=18500000
+debug.sf.early.sf.duration=19000000
+debug.sf.early.app.duration=15000000
+debug.sf.earlyGl.sf.duration=12000000
+debug.sf.earlyGl.app.duration=19000000
+
+# SurfaceFlinger and composition
 debug.sf.enable_hwc_vds=1
 debug.sf.predict_hwc_composition_strategy=0
 debug.sf.disable_client_composition_cache=1
-debug.sf.enable_gl_backpressure=1
+debug.sf.disable_backpressure=1
+debug.sf.enable_gl_backpressure=0
+debug.sf.frame_rate_multiple_threshold=66
+debug.sf.enable_egl_image_tracker=1
+
+# Graphics rendering
+debug.renderengine.backend=skiaglthreaded
+renderthread.skia.reduceopstasksplitting=true
+debug.hwui.renderer=skiagl
+debug.hwui.target_cpu_time_percent=35
+debug.hwui.use_hint_manager=true
 persist.log.tag.OpenGLRenderer=S
+
+# GPU settings
 ro.hardware.egl=adreno
 ro.hardware.vulkan=adreno
 ro.opengles.version=196610
+vendor.gralloc.disable_ubwc=0
+
+# Surface Flinger configuration
 ro.surface_flinger.force_hwc_copy_for_virtual_displays=true
 ro.surface_flinger.has_wide_color_display=true
 ro.surface_flinger.has_HDR_display=true
@@ -152,8 +171,8 @@ ro.surface_flinger.max_virtual_display_dimension=4096
 ro.surface_flinger.protected_contents=true
 ro.surface_flinger.use_color_management=true
 ro.surface_flinger.wcg_composition_dataspace=143261696
-vendor.display.comp_mask=0
-vendor.display.dataspace_saturation_matrix=1.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0
+
+# Qualcomm display settings
 vendor.display.disable_decimation=1
 vendor.display.disable_excl_rect=0
 vendor.display.disable_excl_rect_partial_fb=1
@@ -164,9 +183,6 @@ vendor.display.disable_ui_3d_tonemap=1
 vendor.display.enable_default_color_mode=1
 vendor.display.enable_null_display=0
 vendor.display.enable_optimize_refresh=1
-vendor.gralloc.disable_ubwc=0
-vendor.display.qdcm.mode_combine=1
-vendor.display.enable_force_split=1
 
 # Display - Set color mode to Adaptive by default
 persist.sys.sf.color_saturation=1.0
@@ -192,6 +208,8 @@ vendor.netflix.bsp_rev=Q6150-17263-1
 ro.vendor.qti.va_aosp.support=1
 
 # Radio
+persist.vendor.radio.add_power_save=1
+persist.vendor.radio.sar_sar_sensor=true
 persist.vendor.radio.apm_sim_not_pwdn=1
 persist.vendor.radio.custom_ecc=1
 persist.vendor.radio.data_ltd_sys_ind=1
