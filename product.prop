@@ -1,5 +1,6 @@
 # Bluetooth
 vendor.bluetooth.soc=cherokee
+persist.bluetooth.a2dp_aac.vbr_supported=true
 
 # Charger
 ro.charger.enable_suspend=true
