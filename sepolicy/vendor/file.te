@@ -1,2 +1,5 @@
 # Data files
 type per_boot_file, file_type, data_file_type, core_data_file_type;
+
+# Custom Attestation Keybox
+type custom_keybox_data_file, file_type;

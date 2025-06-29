@@ -4,6 +4,9 @@
 # Camera
 /mnt/vendor/persist/camera(/.*)?                                     u:object_r:vendor_persist_camera_file:s0
 
+# Custom Attestation Keybox
+/data/vendor/keystore(/.*)?                                          u:object_r:custom_keybox_data_file:s0
+
 # Data files
 /data/per_boot(/.*)?                                                 u:object_r:per_boot_file:s0
 
