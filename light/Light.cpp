@@ -22,54 +22,42 @@
 
 #include <fstream>
 
-#define NOTIFICATION_LED_LEFT(x) "/sys/class/leds/left/" + x
-#define NOTIFICATION_LED_WHITE(x) "/sys/class/leds/white/" + x
+#define LED_PATH_LEFT "/sys/class/leds/left/"
+#define LED_PATH_WHITE "/sys/class/leds/white/"
 
 #define BREATH              "breath"
 #define BRIGHTNESS          "brightness"
 #define MAX_BRIGHTNESS      "max_brightness"
 
+namespace android {
+namespace hardware {
+namespace light {
+namespace V2_0 {
+namespace implementation {
+
+// Initialize static members
+std::mutex Light::sLock;
+std::vector<LightBackend> Light::sBackends;
+std::string Light::sBasePath;
+int Light::sMaxBrightness = 255;
+
+// Anonymous namespace for truly local helper functions
 namespace {
-/*
- * Get the full path to the led node.
- */
-static std::string getLedPath(std::string path) {
-    std::ifstream left_path(NOTIFICATION_LED_LEFT(path));
-    return left_path.good() ? NOTIFICATION_LED_LEFT(path) : NOTIFICATION_LED_WHITE(path);
-}
 
 /*
  * Write value to path and close file.
  */
-static void set(std::string path, std::string value) {
-    std::ofstream file(getLedPath(path));
-
+static void set(const std::string& path, const std::string& value) {
+    std::ofstream file(path);
     if (!file.is_open()) {
         ALOGW("failed to write %s to %s", value.c_str(), path.c_str());
         return;
     }
-
     file << value;
 }
 
-static void set(std::string path, int value) {
+static void set(const std::string& path, int value) {
     set(path, std::to_string(value));
-}
-
-/*
- * Read max brightness from path and close file.
- */
-static int getMaxBrightness(std::string path) {
-    std::ifstream file(getLedPath(path));
-    int value;
-
-    if (!file.is_open()) {
-        ALOGW("failed to read from %s", path.c_str());
-        return 0;
-    }
-
-    file >> value;
-    return value;
 }
 
 static uint32_t getBrightness(const LightState& state) {
@@ -97,7 +85,6 @@ static inline uint32_t scaleBrightness(uint32_t brightness, uint32_t maxBrightne
     if (brightness == 0) {
         return 0;
     }
-
     return (brightness - 1) * (maxBrightness - 1) / (0xFF - 1) + 1;
 }
 
@@ -105,96 +92,53 @@ static inline uint32_t getScaledBrightness(const LightState& state, uint32_t max
     return scaleBrightness(getBrightness(state), maxBrightness);
 }
 
-static void handleNotification(const LightState& state) {
-    uint32_t notificationBrightness = getScaledBrightness(state, getMaxBrightness(MAX_BRIGHTNESS));
-
-    /* Disable breathing or blinking */
-    set(BREATH, 0);
-    set(BRIGHTNESS, 0);
-
-    if (!notificationBrightness) {
-        return;
-    }
-
-    switch (state.flashMode) {
-        case Flash::HARDWARE:
-        case Flash::TIMED:
-            /* Breathing */
-            set(BREATH, 1);
-            break;
-        case Flash::NONE:
-        default:
-            set(BRIGHTNESS, notificationBrightness);
-    }
-}
-
 static inline bool isStateLit(const LightState& state) {
     return state.color & 0x00ffffff;
 }
 
 static inline bool isStateEqual(const LightState& first, const LightState& second) {
-    if (first.color == second.color && first.flashMode == second.flashMode &&
-            first.flashOnMs == second.flashOnMs &&
-            first.flashOffMs == second.flashOffMs &&
-            first.brightnessMode == second.brightnessMode) {
-        return true;
-    }
-
-    return false;
-}
-
-/* Keep sorted in the order of importance. */
-static std::vector<LightBackend> backends = {
-    { Type::ATTENTION, handleNotification },
-    { Type::NOTIFICATIONS, handleNotification },
-    { Type::BATTERY, handleNotification },
-};
-
-static LightStateHandler findHandler(Type type) {
-    for (const LightBackend& backend : backends) {
-        if (backend.type == type) {
-            return backend.handler;
-        }
-    }
-
-    return nullptr;
-}
-
-static LightState findLitState(LightStateHandler handler) {
-    LightState emptyState;
-
-    for (const LightBackend& backend : backends) {
-        if (backend.handler == handler) {
-            if (isStateLit(backend.state)) {
-                return backend.state;
-            }
-
-            emptyState = backend.state;
-        }
-    }
-
-    return emptyState;
-}
-
-static void updateState(Type type, const LightState& state) {
-    for (LightBackend& backend : backends) {
-        if (backend.type == type) {
-            backend.state = state;
-        }
-    }
+    return first.color == second.color && first.flashMode == second.flashMode &&
+           first.flashOnMs == second.flashOnMs && first.flashOffMs == second.flashOffMs &&
+           first.brightnessMode == second.brightnessMode;
 }
 
 }  // anonymous namespace
 
-namespace android {
-namespace hardware {
-namespace light {
-namespace V2_0 {
-namespace implementation {
+// Constructor
+Light::Light() {
+    std::lock_guard<std::mutex> lock(sLock);
 
+    // Initialize static members only once
+    if (sBackends.empty()) {
+        // Determine the correct base path for LEDs once to improve performance.
+        std::ifstream left_path(std::string(LED_PATH_LEFT) + BRIGHTNESS);
+        if (left_path.good()) {
+            sBasePath = LED_PATH_LEFT;
+        } else {
+            sBasePath = LED_PATH_WHITE;
+        }
+        ALOGI("Using LED base path: %s", sBasePath.c_str());
+
+        // Read max brightness once from path and cache it.
+        std::ifstream file(sBasePath + MAX_BRIGHTNESS);
+        if (file.is_open()) {
+            file >> sMaxBrightness;
+        } else {
+            ALOGW("Failed to read max brightness, defaulting to 255");
+            sMaxBrightness = 255;
+        }
+
+        /* Keep sorted in the order of importance. */
+        sBackends.emplace_back(Type::ATTENTION, &Light::handleNotification);
+        sBackends.emplace_back(Type::NOTIFICATIONS, &Light::handleNotification);
+        sBackends.emplace_back(Type::BATTERY, &Light::handleNotification);
+    }
+}
+
+// HIDL methods
 Return<Status> Light::setLight(Type type, const LightState& state) {
-    /* Lock global mutex until light state is updated. */
-    std::lock_guard<std::mutex> lock(globalLock);
+    /* Lock mutex until light state is updated. */
+    std::lock_guard<std::mutex> lock(sLock);
 
     LightStateHandler handler = findHandler(type);
     if (!handler) {
@@ -222,14 +166,73 @@ Return<Status> Light::setLight(Type type, const LightState& state) {
 
 Return<void> Light::getSupportedTypes(getSupportedTypes_cb _hidl_cb) {
     std::vector<Type> types;
+    {
+        std::lock_guard<std::mutex> lock(sLock);
+        for (const auto& backend : sBackends) {
+            types.push_back(backend.type);
+        }
+    }
+    _hidl_cb(types);
+    return Void();
+}
 
-    for (const LightBackend& backend : backends) {
-        types.push_back(backend.type);
+// Private static methods of Light class
+LightStateHandler Light::findHandler(Type type) {
+    for (const auto& backend : sBackends) {
+        if (backend.type == type) {
+            return backend.handler;
+        }
+    }
+    return nullptr;
+}
+
+LightState Light::findLitState(LightStateHandler handler) {
+    LightState emptyState;
+    for (const auto& backend : sBackends) {
+        if (backend.handler == handler) {
+            if (isStateLit(backend.state)) {
+                return backend.state;
+            }
+            emptyState = backend.state;
+        }
+    }
+    return emptyState;
+}
+
+void Light::updateState(Type type, const LightState& state) {
+    for (auto& backend : sBackends) {
+        if (backend.type == type) {
+            backend.state = state;
+            return;
+        }
+    }
+}
+
+void Light::handleNotification(const LightState& state) {
+    uint32_t notificationBrightness = getScaledBrightness(state, sMaxBrightness);
+
+    /* Disable breathing or blinking before setting a new state */
+    set(sBasePath + BREATH, 0);
+    set(sBasePath + BRIGHTNESS, 0);
+
+    if (!notificationBrightness) {
+        return; // Turn off the light
     }
 
-    _hidl_cb(types);
-
-    return Void();
+    switch (state.flashMode) {
+        case Flash::HARDWARE:
+        case Flash::TIMED:
+            /* Breathing / Pulsing */
+            // Based on kernel driver analysis, setting brightness here would
+            // disable the breath mode. The driver uses a predefined brightness
+            // (usually max) for the breath effect.
+            set(sBasePath + BREATH, 1);
+            break;
+        case Flash::NONE:
+        default:
+            /* Solid on */
+            set(sBasePath + BRIGHTNESS, notificationBrightness);
+    }
 }
 
 }  // namespace implementation

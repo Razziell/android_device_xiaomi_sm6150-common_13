@@ -18,9 +18,7 @@
 #define ANDROID_HARDWARE_LIGHT_V2_0_LIGHT_H
 
 #include <android/hardware/light/2.0/ILight.h>
-#include <hardware/lights.h>
 #include <hidl/Status.h>
-#include <map>
 #include <mutex>
 #include <vector>
 
@@ -32,6 +30,15 @@ using ::android::hardware::light::V2_0::LightState;
 using ::android::hardware::light::V2_0::Status;
 using ::android::hardware::light::V2_0::Type;
 
+namespace android {
+namespace hardware {
+namespace light {
+namespace V2_0 {
+namespace implementation {
+
+// Forward declaration
+struct LightBackend;
+// Define function pointer type for our handlers
 typedef void (*LightStateHandler)(const LightState&);
 
 struct LightBackend {
@@ -40,23 +47,29 @@ struct LightBackend {
     LightStateHandler handler;
 
     LightBackend(Type type, LightStateHandler handler) : type(type), handler(handler) {
-        this->state.color = 0xff000000;
+        this->state.color = 0xff000000; // Default to black (off)
     }
 };
 
-namespace android {
-namespace hardware {
-namespace light {
-namespace V2_0 {
-namespace implementation {
-
 class Light : public ILight {
   public:
+    Light();
+
     Return<Status> setLight(Type type, const LightState& state) override;
     Return<void> getSupportedTypes(getSupportedTypes_cb _hidl_cb) override;
 
   private:
-    std::mutex globalLock;
+    // Private static helper methods, now part of the class
+    static LightStateHandler findHandler(Type type);
+    static LightState findLitState(LightStateHandler handler);
+    static void updateState(Type type, const LightState& state);
+    static void handleNotification(const LightState& state);
+
+    // Private static state for this singleton service
+    static std::mutex sLock;
+    static std::vector<LightBackend> sBackends;
+    static std::string sBasePath;
+    static int sMaxBrightness;
 };
 
 }  // namespace implementation
