@@ -39,6 +39,9 @@
 # Remosaic
 /vendor/bin/remosaic_daemon                                          u:object_r:remosaic_daemon_exec:s0
 
+# Sbalance sysfs
+/sys/kernel/sbalance(/.*)?                                           u:object_r:sbalance_sysfs:s0
+
 # WiFi
 /vendor/bin/nv_mac                                                   u:object_r:vendor_wcnss_service_exec:s0
 

@@ -170,6 +170,21 @@ on property:sys.boot_completed=1
     write /dev/cpuctl/rt/cpu.shares 20480
     write /dev/cpuctl/top-app/cpu.shares 20480
 
+    # Set default polling interval to 1.5 seconds
+    write /sys/kernel/sbalance/sb_poll_ms 1500
+    # Set imbalance threshold
+    write /sys/kernel/sbalance/sb_thresh 512
+    # Set migration cooldown to 2 seconds
+    write /sys/kernel/sbalance/sb_cooldown_ms 2000
+    # Ignore IRQs with less than 8 interrupts per window
+    write /sys/kernel/sbalance/sb_per_irq_min 8
+    # Blacklist IRQs that are sensitive to latency or cause issues
+    write /sys/kernel/sbalance/sb_blacklist "goodix_ts,msm_drm,dsi_ctrl,TE_GPIO"
+    # Exclude big cores (CPU6–CPU7) from balancing (keep IRQs on LITTLE cores)
+    write /sys/kernel/sbalance/exclude_cpus "6,7"
+    # Enable SBalance by default
+    write /sys/kernel/sbalance/sbalance_enabled 1
+
 service vendor.pd_mapper /vendor/bin/pd-mapper
     class core
     user system

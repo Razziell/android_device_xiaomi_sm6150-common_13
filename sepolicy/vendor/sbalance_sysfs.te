@@ -1,0 +1,15 @@
+#init: read/write (set defaults at boot)
+allow init sbalance_sysfs:dir search;
+allow init sbalance_sysfs:file rw_file_perms;
+
+#system_server: read-only (monitoring if needed)
+allow system_server sbalance_sysfs:dir search;
+allow system_server sbalance_sysfs:file r_file_perms;
+
+#shell (adb): read-only (diagnostics)
+allow shell sbalance_sysfs:dir search;
+allow shell sbalance_sysfs:file r_file_perms;
+
+#su (root, if used): read/write (manual tuning)
+allow su sbalance_sysfs:dir search;
+allow su sbalance_sysfs:file rw_file_perms;
