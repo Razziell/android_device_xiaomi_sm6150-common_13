@@ -55,7 +55,7 @@ on init
     write /dev/sys/fs/by-name/userdata/node_io_flag 56
 
     # ZRAM setup
-    write /sys/block/zram0/comp_algorithm lz4kd
+    write /sys/block/zram0/comp_algorithm lz4
     write /proc/sys/vm/page-cluster 0
 
 on fs
@@ -147,9 +147,10 @@ on boot
 
 on property:sys.boot_completed=1
     stop statsd
-    # Set allocstall_threshold to 0
-    # Set swappiness to 90
-    write /proc/sys/vm/swappiness 90
+    # Memory tuning
+    write /proc/sys/vm/min_free_kbytes 16384
+    # Set swappiness to 60 (less aggressive swapping)
+    write /proc/sys/vm/swappiness 60
 
     # Enable ZRAM on boot_complete
     swapon_all /vendor/etc/fstab.zram
