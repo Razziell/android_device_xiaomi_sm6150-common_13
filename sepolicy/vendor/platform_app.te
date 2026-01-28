@@ -1,0 +1,4 @@
+# Suppress vendor property access denials
+dontaudit platform_app vendor_fp_prop:file read;
+dontaudit platform_app vendor_display_prop:file read;
+dontaudit platform_app vendor_audio_prop:file read;

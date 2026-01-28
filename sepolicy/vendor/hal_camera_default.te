@@ -10,3 +10,13 @@ r_dir_file(hal_camera_default, mnt_vendor_file)
 
 allow hal_camera_default remosaic_daemon_service:service_manager find;
 binder_call(hal_camera_default, remosaic_daemon)
+
+# Allow access to camera data files in /data/vendor/camera
+allow hal_camera_default vendor_camera_data_file:dir { search getattr };
+allow hal_camera_default vendor_camera_data_file:file { read open getattr };
+
+# Allow searching in the root /data (to find the path to vendor/camera)
+allow hal_camera_default system_data_file:dir { search getattr };
+
+# Allow camera HAL to set vendor camera properties
+set_prop(hal_camera_default, vendor_camera_prop)
