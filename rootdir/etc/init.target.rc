@@ -171,7 +171,34 @@ on property:sys.boot_completed=1
     write /dev/cpuctl/rt/cpu.shares 20480
     write /dev/cpuctl/top-app/cpu.shares 20480
 
-    # Set default polling interval to 1.5 seconds
+    # ============================================================
+    # RPS (Receive Packet Steering)
+    # Distributes network softirq processing to LITTLE cores (CPU 0-5)
+    # This offloads NET_RX from CPU0 where hardware IRQ is pinned
+    # ============================================================
+    write /proc/sys/net/core/rps_sock_flow_entries 4096
+
+    # WiFi - all RX queues
+    write /sys/class/net/wlan0/queues/rx-0/rps_cpus 3f
+    write /sys/class/net/wlan0/queues/rx-1/rps_cpus 3f
+    write /sys/class/net/wlan0/queues/rx-2/rps_cpus 3f
+    write /sys/class/net/wlan0/queues/rx-3/rps_cpus 3f
+    write /sys/class/net/wlan0/queues/rx-4/rps_cpus 3f
+
+    # WiFi Direct - all RX queues
+    write /sys/class/net/p2p0/queues/rx-0/rps_cpus 3f
+    write /sys/class/net/p2p0/queues/rx-1/rps_cpus 3f
+    write /sys/class/net/p2p0/queues/rx-2/rps_cpus 3f
+    write /sys/class/net/p2p0/queues/rx-3/rps_cpus 3f
+    write /sys/class/net/p2p0/queues/rx-4/rps_cpus 3f
+
+    # Mobile data
+    write /sys/class/net/rmnet_data0/queues/rx-0/rps_cpus 3f
+
+    # ============================================================
+    # SBalance IRQ balancer
+    # ============================================================
+    # Set imbalance threshold
     write /sys/kernel/sbalance/sb_poll_ms 1500
     # Set imbalance threshold
     write /sys/kernel/sbalance/sb_thresh 512
