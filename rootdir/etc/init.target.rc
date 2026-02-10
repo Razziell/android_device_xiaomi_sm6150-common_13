@@ -201,11 +201,11 @@ on property:sys.boot_completed=1
     # Set imbalance threshold
     write /sys/kernel/sbalance/sb_poll_ms 1500
     # Set imbalance threshold
-    write /sys/kernel/sbalance/sb_thresh 512
-    # Set migration cooldown to 2 seconds
-    write /sys/kernel/sbalance/sb_cooldown_ms 2000
-    # Ignore IRQs with less than 8 interrupts per window
-    write /sys/kernel/sbalance/sb_per_irq_min 8
+    write /sys/kernel/sbalance/sb_thresh 768
+    # Set migration cooldown to 3.5 seconds
+    write /sys/kernel/sbalance/sb_cooldown_ms 3500
+    # Ignore IRQs with less than 16 interrupts per window
+    write /sys/kernel/sbalance/sb_per_irq_min 16
     # Blacklist IRQs that are sensitive to latency or cause issues
     write /sys/kernel/sbalance/sb_blacklist "goodix_ts,msm_drm,dsi_ctrl,TE_GPIO"
     # Exclude big cores (CPU6–CPU7) from balancing (keep IRQs on LITTLE cores)
