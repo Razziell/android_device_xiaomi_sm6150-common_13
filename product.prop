@@ -18,7 +18,7 @@ ro.incremental.enable=yes
 ro.lmk.use_psi=true
 ro.lmk.use_minfree_levels=false
 ro.lmk.kill_heaviest_task=true
-ro.lmk.kill_timeout_ms=15
+ro.lmk.kill_timeout_ms=50
 
 # Media
 media.aac_51_output_enabled=true
