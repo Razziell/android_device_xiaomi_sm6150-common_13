@@ -473,8 +473,58 @@ void LocApiBase::reportNmea(const char* nmea, int length)
 void LocApiBase::reportXtraServer(const char* url1, const char* url2,
                                   const char* url3, const int maxlength)
 {
+    // Check if custom XTRA server URLs are configured in gps.conf (XTRA_SERVER_1/2/3).
+    // If so, override the modem-provided URLs to bypass Qualcomm CloudFront
+    // geo-blocking (HTTP 403) or to use a custom proxy.
+    //
+    // Note: ContextBase::mGps_conf.XTRA_SERVER_n are char[] in a static
+    // zero-initialized struct, so they are always valid (at minimum "\0").
+    // They are written once at boot by readConfig() and are read-only after that.
+    //
+    // If only XTRA_SERVER_1 is set in gps.conf, XTRA_SERVER_2 and _3 will
+    // fall back to the same value, providing 3 identical but working URLs
+    // rather than 2 geo-blocked modem URLs.
+    const char* finalUrl1 = url1;
+    const char* finalUrl2 = url2;
+    const char* finalUrl3 = url3;
+
+    const char* confUrl1 = ContextBase::mGps_conf.XTRA_SERVER_1;
+    const char* confUrl2 = ContextBase::mGps_conf.XTRA_SERVER_2;
+    const char* confUrl3 = ContextBase::mGps_conf.XTRA_SERVER_3;
+
+    // Use gps.conf URLs if at least the first one is non-empty
+    if (confUrl1[0] != '\0') {
+        // Validate that conf URLs fit within maxlength if specified
+        if (maxlength > 0 && (int)strlen(confUrl1) >= maxlength) {
+            LOC_LOGe("reportXtraServer: gps.conf XTRA_SERVER_1 too long (%zu >= %d), "
+                     "skipping override", strlen(confUrl1), maxlength);
+        } else {
+            finalUrl1 = confUrl1;
+            finalUrl2 = (confUrl2[0] != '\0' &&
+                         (maxlength <= 0 || (int)strlen(confUrl2) < maxlength))
+                        ? confUrl2 : confUrl1;
+            finalUrl3 = (confUrl3[0] != '\0' &&
+                         (maxlength <= 0 || (int)strlen(confUrl3) < maxlength))
+                        ? confUrl3 : confUrl1;
+
+            LOC_LOGw("reportXtraServer: overriding modem XTRA servers with gps.conf values");
+            LOC_LOGd("  modem url1: %s", url1 ? url1 : "null");
+            LOC_LOGd("  modem url2: %s", url2 ? url2 : "null");
+            LOC_LOGd("  modem url3: %s", url3 ? url3 : "null");
+            LOC_LOGd("  conf  url1: %s", finalUrl1);
+            LOC_LOGd("  conf  url2: %s", finalUrl2);
+            LOC_LOGd("  conf  url3: %s", finalUrl3);
+        }
+    } else {
+        LOC_LOGd("reportXtraServer: no override in gps.conf, using modem URLs");
+        LOC_LOGd("  url1: %s", url1 ? url1 : "null");
+        LOC_LOGd("  url2: %s", url2 ? url2 : "null");
+        LOC_LOGd("  url3: %s", url3 ? url3 : "null");
+    }
+
     // loop through adapters, and deliver to the first handling adapter.
-    TO_1ST_HANDLING_LOCADAPTERS(mLocAdapters[i]->reportXtraServer(url1, url2, url3, maxlength));
+    TO_1ST_HANDLING_LOCADAPTERS(
+        mLocAdapters[i]->reportXtraServer(finalUrl1, finalUrl2, finalUrl3, maxlength));
 
 }
 
