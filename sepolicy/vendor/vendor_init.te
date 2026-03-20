@@ -2,3 +2,7 @@ set_prop(vendor_init, vendor_fp_prop)
 
 # Allow vendor_init to relabel unlabeled files and directories
 allow vendor_init unlabeled:{ dir file } { getattr relabelfrom };
+
+# VM tuning - confirmed by AVC logs
+allow vendor_init proc_extra_free_kbytes:file rw_file_perms;
+allow vendor_init proc_watermark_scale_factor:file rw_file_perms;

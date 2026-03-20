@@ -10,3 +10,9 @@ allow init sysfs_battery_supply:file { setattr };
 # Allow init to read and write to sysfs_vibrator
 allow init sysfs_vibrator:dir search;
 allow init sysfs_vibrator:file rw_file_perms;
+
+# Block device tuning
+allow init sysfs_discard_max_bytes:file rw_file_perms;
+
+# MGLRU tuning
+allow init sysfs_lru_gen:file rw_file_perms;

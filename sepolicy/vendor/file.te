@@ -6,3 +6,9 @@ type custom_keybox_data_file, file_type;
 
 # Sbalance sysfs
 type sbalance_sysfs, sysfs_type, fs_type;
+
+# Block device tuning
+type sysfs_discard_max_bytes, sysfs_type, fs_type;
+
+# LRU gen tuning
+type sysfs_lru_gen, sysfs_type, fs_type;
