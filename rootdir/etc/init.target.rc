@@ -149,10 +149,10 @@ on property:sys.boot_completed=1
     # Watermarks & kswapd
     write /proc/sys/vm/min_free_kbytes 32768
     write /proc/sys/vm/extra_free_kbytes 43008
-    write /proc/sys/vm/watermark_scale_factor 150
+    write /proc/sys/vm/watermark_scale_factor 100
     # Reclaim policy
-    write /proc/sys/vm/swappiness 50
-    write /proc/sys/vm/vfs_cache_pressure 75
+    write /proc/sys/vm/swappiness 80
+    write /proc/sys/vm/vfs_cache_pressure 90
     # Writeback
     write /proc/sys/vm/dirty_background_ratio 5
     write /proc/sys/vm/dirty_ratio 20
@@ -161,8 +161,9 @@ on property:sys.boot_completed=1
     # OOM behavior
     write /proc/sys/vm/user_reserve_kbytes 65536
     write /proc/sys/vm/reap_mem_on_sigkill 1
+    write /proc/sys/vm/oom_dump_tasks 0
     # MGLRU: prevent swap thrashing
-    write /sys/kernel/mm/lru_gen/min_ttl_ms 1000
+    write /sys/kernel/mm/lru_gen/min_ttl_ms 500
 
     # Enable ZRAM on boot_complete
     swapon_all /vendor/etc/fstab.zram

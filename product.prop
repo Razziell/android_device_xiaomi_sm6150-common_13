@@ -1,3 +1,6 @@
+# ART / Dalvik VM
+dalvik.vm.heaptargetutilization=0.75
+
 # Bluetooth
 vendor.bluetooth.soc=cherokee
 persist.bluetooth.a2dp_aac.vbr_supported=true
@@ -18,7 +21,13 @@ ro.incremental.enable=yes
 ro.lmk.use_psi=true
 ro.lmk.use_minfree_levels=false
 ro.lmk.kill_heaviest_task=true
-ro.lmk.kill_timeout_ms=50
+ro.lmk.kill_timeout_ms=200
+ro.lmk.swap_free_low_percentage=15
+ro.lmk.thrashing_limit=30
+ro.lmk.thrashing_limit_decay=50
+ro.lmk.psi_partial_stall_ms=70
+ro.lmk.psi_complete_stall_ms=700
+ro.lmk.swap_util_max=90
 
 # Media
 media.aac_51_output_enabled=true
