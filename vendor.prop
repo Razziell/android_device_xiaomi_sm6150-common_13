@@ -11,7 +11,7 @@ persist.vendor.audio.fluence.speaker=true
 persist.vendor.audio.fluence.voicecall=true
 persist.vendor.audio.fluence.voicecomm=true
 persist.vendor.audio.fluence.voicerec=true
-persist.vendor.audio.ras.enabled=false
+persist.vendor.audio.ras.enabled=true
 persist.vendor.audio.spv3.enable=true
 ro.af.client_heap_size_kbyte=7168
 ro.config.vc_call_vol_steps=11
@@ -27,7 +27,7 @@ vendor.audio.feature.compress_meta_data.enable=true
 vendor.audio.feature.concurrent_capture.enable=false
 vendor.audio.feature.custom_stereo.enable=true
 vendor.audio.feature.deepbuffer_as_primary.enable=false
-vendor.audio.feature.display_port.enable=true
+vendor.audio.feature.display_port.enable=false
 vendor.audio.feature.dsm_feedback.enable=false
 vendor.audio.feature.dynamic_ecns.enable=false
 vendor.audio.feature.external_dsp.enable=false
@@ -36,7 +36,7 @@ vendor.audio.feature.external_speaker_tfa.enable=false
 vendor.audio.feature.ext_hw_plugin.enable=false
 vendor.audio.feature.fluence.enable=true
 vendor.audio.feature.fm.enable=true
-vendor.audio.feature.hdmi_edid.enable=true
+vendor.audio.feature.hdmi_edid.enable=false
 vendor.audio.feature.hdmi_passthrough.enable=false
 vendor.audio.feature.hfp.enable=true
 vendor.audio.feature.hifi_audio.enable=false
@@ -130,29 +130,18 @@ persist.vendor.dpm.feature=1
 persist.vendor.dpm.nsrm.bkg.evt=3955
 persist.vendor.dpmhalservice.enable=1
 
-# Display - Phase offsets for 66 Hz
-debug.sf.use_phase_offsets_as_durations=1
-debug.sf.late.sf.duration=9500000
-debug.sf.late.app.duration=18500000
-debug.sf.early.sf.duration=19000000
-debug.sf.early.app.duration=15000000
-debug.sf.earlyGl.sf.duration=12000000
-debug.sf.earlyGl.app.duration=19000000
-
 # SurfaceFlinger and composition
 debug.sf.enable_hwc_vds=1
 debug.sf.predict_hwc_composition_strategy=0
-debug.sf.disable_client_composition_cache=1
-debug.sf.disable_backpressure=1
-debug.sf.enable_gl_backpressure=0
-debug.sf.frame_rate_multiple_threshold=66
-debug.sf.enable_egl_image_tracker=1
+debug.sf.disable_client_composition_cache=0
+debug.sf.disable_backpressure=0
+debug.sf.enable_gl_backpressure=1
+debug.sf.enable_egl_image_tracker=0
 
 # Graphics rendering
 debug.renderengine.backend=skiaglthreaded
 renderthread.skia.reduceopstasksplitting=true
 debug.hwui.renderer=skiagl
-debug.hwui.target_cpu_time_percent=35
 debug.hwui.use_hint_manager=true
 persist.log.tag.OpenGLRenderer=S
 
@@ -177,17 +166,15 @@ vendor.display.disable_decimation=1
 vendor.display.disable_excl_rect=0
 vendor.display.disable_excl_rect_partial_fb=1
 vendor.display.disable_hw_recovery_dump=1
-vendor.display.disable_inline_rotator=1
+vendor.display.disable_inline_rotator=0
 vendor.display.disable_scaler=0
 vendor.display.disable_ui_3d_tonemap=1
 vendor.display.enable_default_color_mode=1
 vendor.display.enable_null_display=0
 vendor.display.enable_optimize_refresh=1
 
-# Display - Set color mode to Adaptive by default
+# Display - Use default SurfaceFlinger color saturation
 persist.sys.sf.color_saturation=1.0
-persist.sys.sf.native_mode=2
-persist.sys.sf.color_mode=9
 
 # FRP
 ro.frp.pst=/dev/block/bootdevice/by-name/frp
@@ -210,16 +197,9 @@ ro.vendor.qti.va_aosp.support=1
 # Radio
 persist.vendor.radio.add_power_save=1
 persist.vendor.radio.sar_sar_sensor=true
-persist.vendor.radio.apm_sim_not_pwdn=1
-persist.vendor.radio.custom_ecc=1
-persist.vendor.radio.data_ltd_sys_ind=1
 persist.vendor.radio.dynamic_sar=1
 persist.vendor.radio.enableadvancedscan=true
-persist.vendor.radio.force_ltd_sys_ind=1
-persist.vendor.radio.force_on_dc=true
 persist.vendor.radio.manual_nw_rej_ct=1
-persist.vendor.radio.mt_sms_ack=30
-persist.vendor.radio.procedure_bytes=SKIP
 persist.vendor.radio.rat_on=combine
 persist.vendor.radio.report_codec=1
 persist.vendor.radio.sib16_support=1
